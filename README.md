@@ -34,8 +34,8 @@ pnpm add @zealsprince/ti18n
 ## Basic Usage
 
 ```javascript
-import { ti18n } from 'ti18n';
-// or const { ti18n } = require('ti18n');
+import { ti18n } from '@zealsprince/ti18n';
+// or const { ti18n } = require('@zealsprince/ti18n');
 
 // Import your keys which consist of a list of strings.
 import keys from '@/resources/i18n/keys.json';

@@ -27,32 +27,29 @@ export interface CoverageReport {
  * ti18n class for handling internationalization
  */
 export class Ti18n {
-  private i18ns: Map<string, Internationalization>;
+  private i18ns = new Map<string, Internationalization>();
   private header: string;
   private separator: string;
-  private coverageReports: Map<string, CoverageReport> = new Map();
+  private coverageReports = new Map<string, CoverageReport>();
   private currentLanguage: string | null = null;
-  
   private _keys: string[] = [];
 
   /**
    * Create a new Ti18n instance
    * @param options Configuration options
    */
-  constructor(
-    options: {
-      header?: string;
-      separator?: string;
-      keys?: string[];
-    } = {}
-  ) {
-    this.i18ns = new Map();
-    this.header = options.header || DEFAULT_I18N_HEADER;
-    this.separator = options.separator || DEFAULT_I18N_SEPARATOR;
-
-    if (options.keys) {
-      this.loadKeys(options.keys);
-    }
+  constructor({
+    header = DEFAULT_I18N_HEADER,
+    separator = DEFAULT_I18N_SEPARATOR,
+    keys,
+  }: {
+    header?: string;
+    separator?: string;
+    keys?: string[];
+  } = {}) {
+    this.header = header;
+    this.separator = separator;
+    if (keys?.length) this._keys = keys;
   }
 
   // Key Management
@@ -62,11 +59,7 @@ export class Ti18n {
    * @returns Record of all defined keys
    */
   get keys(): Record<string, string> {
-    const result: Record<string, string> = {};
-    for (const key of this._keys) {
-      result[key] = this.createKey(key);
-    }
-    return result;
+    return Object.fromEntries(this._keys.map(k => [k, this.createKey(k)]));
   }
 
   /**
@@ -74,8 +67,8 @@ export class Ti18n {
    * @param key The key part of the translation
    * @returns The formatted translation key
    */
-  createKey(key: string): string {
-    return `${this.header}${this.separator}${key}`;
+  private createKey(key: string): string {
+    return this.header + this.separator + key;
   }
 
   /**
@@ -84,14 +77,10 @@ export class Ti18n {
    * @returns The formatted translation key
    */
   addKey(key: string): string {
-    let formattedKey = key;
-    if (!this.hasTranslationHeader(key)) {
-      formattedKey = this.createKey(key);
+    const formattedKey = this.hasTranslationHeader(key) ? key : this.createKey(key);
+    if (!this._keys.includes(formattedKey)) {
+      this._keys.push(formattedKey);
     }
-
-    if (this._keys.includes(formattedKey)) return formattedKey;
-
-    this._keys.push(formattedKey);
     return formattedKey;
   }
 
@@ -99,12 +88,8 @@ export class Ti18n {
    * Add translation keys for all specified keys
    * @returns Object mapping raw keys to formatted translation keys
    */
-  addAllKeys(): Record<string, string> {
-    const result: Record<string, string> = {};
-    for (const key of this._keys) {
-      result[key] = this.addKey(key);
-    }
-    return result;
+  addKeys(): Record<string, string> {
+    return Object.fromEntries(this._keys.map(k => [k, this.addKey(k)]));
   }
 
   // Language Management
@@ -122,8 +107,8 @@ export class Ti18n {
    * @param locale The locale code to set as global
    * @throws Error if the locale is not loaded
    */
-  setLanguage(locale: string | null) {
-    if (locale !== null && !this.hasLocale(locale)) {
+  setLanguage(locale: string | null): void {
+    if (locale !== null && !this.i18ns.has(locale)) {
       throw new Error(`Locale "${locale}" is not loaded`);
     }
     this.currentLanguage = locale;
@@ -136,10 +121,8 @@ export class Ti18n {
    * @param keys Array of translation keys
    */
   loadKeys(keys: string[]): void {
-    this._keys = [...keys]; // Create a copy to avoid external modifications
-
-    // Re-validate all loaded locales against the new keys
-    for (const locale of this.getLocales()) {
+    this._keys = keys;
+    for (const locale of this.i18ns.keys()) {
       this.validateLocale(locale);
     }
   }
@@ -149,31 +132,18 @@ export class Ti18n {
    * @param locale The locale code to register the data for
    * @param data The internationalization data
    */
-  loadLocale(locale: string, data: InternationalizationData): void {
-    if (!data) {
-      console.warn(`No data provided for locale "${locale}"`);
-      data = {};
-    }
-
-    // Ensure required fields exist
-    if (!data.languages) data.languages = {};
-    if (!data.dictionary) data.dictionary = {};
-
+  loadLocale(locale: string, data: InternationalizationData = {}): void {
     const i18n: Internationalization = {
-      languages: new Map<string, string>(Object.entries(data.languages)),
-      dictionary: new Map<string, string>(Object.entries(data.dictionary)),
+      languages: new Map(Object.entries(data.languages || {})),
+      dictionary: new Map(Object.entries(data.dictionary || {}))
     };
-
     this.i18ns.set(locale, i18n);
-
-    // Validate against keys if available
-    if (this._keys.length > 0) {
+    
+    if (this._keys.length) {
       const report = this.validateLocale(locale);
-      if (report && report.missingKeys.length > 0) {
+      if (report?.missingKeys.length) {
         console.warn(
-          `Locale "${locale}" is missing ${
-            report.missingKeys.length
-          } translations (${(report.coverage * 100).toFixed(1)}% coverage).`
+          `Locale "${locale}" missing ${report.missingKeys.length} translations (${(report.coverage * 100).toFixed(1)}% coverage)`
         );
       }
     }
@@ -184,9 +154,7 @@ export class Ti18n {
    * @param resources Object mapping locale codes to their data
    */
   loadLocales(resources: Record<string, InternationalizationData>): void {
-    for (const [locale, data] of Object.entries(resources)) {
-      this.loadLocale(locale, data);
-    }
+    Object.entries(resources).forEach(([locale, data]) => this.loadLocale(locale, data));
   }
 
   // Validation and Coverage
@@ -197,27 +165,22 @@ export class Ti18n {
    * @returns Coverage report for the locale
    */
   validateLocale(locale: string): CoverageReport | null {
-    if (this._keys.length === 0 || !this.hasLocale(locale)) return null;
+    const i18n = this.i18ns.get(locale);
+    if (!this._keys.length || !i18n) return null;
 
-    const i18n = this.i18ns.get(locale)!;
-    const dictionaryKeys = Array.from(i18n.dictionary.keys());
+    const dictionaryKeys = new Set(i18n.dictionary.keys());
+    const keysSet = new Set(this._keys);
 
     // Find missing and extra keys
-    const missingKeys = this._keys.filter(
-      (key) => !dictionaryKeys.includes(key)
-    );
-    const extraKeys = dictionaryKeys.filter((key) => !this._keys.includes(key));
+    const missingKeys = this._keys.filter(k => !dictionaryKeys.has(k));
+    const extraKeys = Array.from(dictionaryKeys).filter(k => !keysSet.has(k));
 
     // Calculate coverage
-    const totalKeys = this._keys.length;
-    const translatedKeys = totalKeys - missingKeys.length;
-    const coverage = totalKeys > 0 ? translatedKeys / totalKeys : 1;
-
     const report: CoverageReport = {
       locale,
       missingKeys,
       extraKeys,
-      coverage,
+      coverage: (this._keys.length - missingKeys.length) / this._keys.length || 1
     };
 
     this.coverageReports.set(locale, report);
@@ -247,7 +210,7 @@ export class Ti18n {
    * Get the list of available locales
    * @returns Array of locale codes
    */
-  getLocales(): Array<string> {
+  getLocales(): string[] {
     return Array.from(this.i18ns.keys());
   }
 
@@ -286,28 +249,20 @@ export class Ti18n {
     // If this is not a translation key, return it unchanged
     if (!this.hasTranslationHeader(key)) return key;
 
-    const values = key.split(this.separator);
-    if (values.length !== 2) return key; // Wrongly formatted key
+    const [header, translationKey] = key.split(this.separator);
+    if (!translationKey) return key;
 
     const i18n = this.i18ns.get(locale);
-    if (!i18n)
-      return `${key}${this.separator}${locale}${this.separator}error-missing-locale`;
+    if (!i18n) return `${key}${this.separator}${locale}${this.separator}error-missing-locale`;
 
-    const i18nKey = values[1];
-    let value = i18n.dictionary.get(i18nKey);
-    if (!value)
-      return `${key}${this.separator}${locale}${this.separator}error-missing-key`;
+    let value = i18n.dictionary.get(translationKey);
+    if (!value) return `${key}${this.separator}${locale}${this.separator}error-missing-key`;
 
     // Replace placeholders with values
     if (args) {
-      if (args instanceof Map) {
-        args.forEach((v, k) => {
-          value = value!.replace(new RegExp(`\\{${k}\\}`, "g"), v);
-        });
-      } else {
-        Object.entries(args).forEach(([k, v]) => {
-          value = value!.replace(new RegExp(`\\{${k}\\}`, "g"), v);
-        });
+      const entries = args instanceof Map ? args.entries() : Object.entries(args);
+      for (const [k, v] of entries) {
+        value = value.replaceAll(`{${k}}`, v);
       }
     }
 
@@ -326,7 +281,7 @@ export class Ti18n {
     args?: Map<string, string> | Record<string, string>
   ): string {
     if (!this.currentLanguage) {
-      throw new Error('No global language set. Use currentLanguage setter first or use translateTo() instead.');
+      throw new Error('No global language set. Use setLanguage first or use translateTo instead.');
     }
     return this.translateTo(key, this.currentLanguage, args);
   }
@@ -339,12 +294,7 @@ export class Ti18n {
    */
   getLanguageName(code: string, locale: string): string {
     const i18n = this.i18ns.get(locale);
-    if (!i18n) return `Internationalization '${locale}' not found`;
-
-    const value = i18n.languages.get(code);
-    if (!value) return code;
-
-    return value;
+    return i18n?.languages.get(code) || code;
   }
 }
 

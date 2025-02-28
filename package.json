@@ -2,22 +2,26 @@
   "name": "@zealsprince/ti18n",
   "version": "2.0.1",
   "description": "Tiny internationalization library for TypeScript/JavaScript with zero dependencies",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=20.0.0"
   },
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
-  "type": "module",
+  "sideEffects": false,
   "files": [
-    "dist",
+    "dist/index.cjs",
+    "dist/index.js",
+    "dist/index.d.ts",
     "README.md",
     "LICENSE"
   ],
@@ -60,7 +64,6 @@
   },
   "publishConfig": {
     "access": "public"
-},
+  },
   "homepage": "https://github.com/zealsprince/ti18n#readme"
-  
 }

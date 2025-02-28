@@ -87,12 +87,12 @@ describe("ti18n TypeScript Integration", () => {
     expect(i18n.translate(i18n.keys.welcome, params)).toBe("Bienvenue, Alice !");
   });
 
-  test("should use allKeys getter with type safety", () => {
+  test("should use keys getter with type safety", () => {
     // TypeScript should infer these as strings
     const greetingKey: string = i18n.keys.greeting;
     const welcomeKey: string = i18n.keys.welcome;
     
-    expect(greetingKey).toBe(i18n.createKey("greeting"));
-    expect(welcomeKey).toBe(i18n.createKey("welcome"));
+    expect(greetingKey).toBe("i18n::greeting");
+    expect(welcomeKey).toBe("i18n::welcome");
   });
 });

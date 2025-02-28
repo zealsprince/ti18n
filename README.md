@@ -1,6 +1,6 @@
 # ti18n - Tiny Internationalization
 
-[![Build](https://github.com/zealsprince/ti18n/actions/workflows/build.yml/badge.svg)](https://github.com/zealsprince/ti18n/actions/workflows/build.yml)
+[![Build & Test](https://github.com/zealsprince/ti18n/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/zealsprince/ti18n/actions/workflows/build.yml)
 
 A lightweight, zero-dependency internationalization library for TypeScript and JavaScript applications.
 

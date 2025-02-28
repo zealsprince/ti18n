@@ -1,6 +1,6 @@
 {
   "name": "@zealsprince/ti18n",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Tiny internationalization library for TypeScript/JavaScript with zero dependencies",
   "type": "module",
   "main": "./dist/index.cjs",

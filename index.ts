@@ -49,17 +49,22 @@ export class Ti18n {
   } = {}) {
     this.header = header;
     this.separator = separator;
-    if (keys?.length) this._keys = keys;
+    if (keys?.length) 
+      this.loadKeys(keys);
+    
   }
 
   // Key Management
   
   /**
-   * Get all defined keys
+   * Get all defined keys mapped to their formatted versions
    * @returns Record of all defined keys
    */
   get keys(): Record<string, string> {
-    return Object.fromEntries(this._keys.map(k => [k, this.createKey(k)]));
+    // We need to split the keys by the separator
+    const keys = Object.fromEntries(this._keys.map(k => [k.split(this.separator)[1], k]));
+
+    return keys;
   }
 
   /**

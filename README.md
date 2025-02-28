@@ -75,10 +75,13 @@ console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Cove
 import { Ti18n } from "@zealsprince/ti18n"; // Use the Ti18n class instead of the default instance.
 
 // Define keys.
-const keys = ["greeting", "welcome", "farewell"];
+const keys = ["greeting", "welcome", "farewell"]
+
+// Create a type from the keys.
+type Key = typeof keys[number]
 
 // Create an instance with predefined keys; strictly typed.
-const i18n = new Ti18n<"greeting" | "welcome" | "farewell">({ keys });
+const i18n = new Ti18n<Key>({ keys });
 ```
 
 > [!NOTE]

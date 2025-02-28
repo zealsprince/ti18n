@@ -162,10 +162,10 @@ export class Ti18n {
     if (!this._keys.length || !i18n) return null;
 
     const dictionaryKeys = new Set(i18n.dictionary.keys());
-    const keysSet = new Set(this._keys);
+    const keysSet = new Set(this._keys.map(k => k.split(this.separator)[1]));
 
     // Find missing and extra keys
-    const missingKeys = this._keys.filter(k => !dictionaryKeys.has(k));
+    const missingKeys = Array.from(keysSet).filter(k => !dictionaryKeys.has(k));
     const extraKeys = Array.from(dictionaryKeys).filter(k => !keysSet.has(k));
 
     // Calculate coverage

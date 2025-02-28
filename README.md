@@ -81,7 +81,7 @@ const keys = ['greeting', 'welcome', 'farewell'];
 const i18n = new Ti18n({ keys });
 ```
 
-> ![NOTE]
+> [!NOTE]
 > Keys - although in their definition without headers - need to be prefixed with a header and separator when used in translations. This is to avoid any ambiguity. The default header is `i18n` and the default separator is `::`. You can change these in the constructor.
 
 ```javascript

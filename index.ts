@@ -51,7 +51,6 @@ export class Ti18n {
     this.separator = separator;
     if (keys?.length) 
       this.loadKeys(keys);
-    
   }
 
   // Key Management

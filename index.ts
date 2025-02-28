@@ -71,27 +71,6 @@ export class Ti18n {
     return this.header + this.separator + key;
   }
 
-  /**
-   * Add a translation key with the proper format
-   * @param key The key part of the translation
-   * @returns The formatted translation key
-   */
-  addKey(key: string): string {
-    const formattedKey = this.hasTranslationHeader(key) ? key : this.createKey(key);
-    if (!this._keys.includes(formattedKey)) {
-      this._keys.push(formattedKey);
-    }
-    return formattedKey;
-  }
-
-  /**
-   * Add translation keys for all specified keys
-   * @returns Object mapping raw keys to formatted translation keys
-   */
-  addKeys(): Record<string, string> {
-    return Object.fromEntries(this._keys.map(k => [k, this.addKey(k)]));
-  }
-
   // Language Management
 
   /**
@@ -117,14 +96,24 @@ export class Ti18n {
   // Loading and Resource Management
 
   /**
+   * Load a translation key with the proper format
+   * @param key The key part of the translation
+   * @returns The formatted translation key
+   */
+  loadKey(key: string): string {
+    const formattedKey = this.hasTranslationHeader(key) ? key : this.createKey(key);
+    if (!this._keys.includes(formattedKey)) {
+      this._keys.push(formattedKey);
+    }
+    return formattedKey;
+  }
+
+  /**
    * Load keys from an array
    * @param keys Array of translation keys
    */
   loadKeys(keys: string[]): void {
-    this._keys = keys;
-    for (const locale of this.i18ns.keys()) {
-      this.validateLocale(locale);
-    }
+    keys.forEach(key => this.loadKey(key));
   }
 
   /**
@@ -288,13 +277,13 @@ export class Ti18n {
 
   /**
    * Get the localized name of a language
-   * @param code The language code to get the name for
-   * @param locale The locale to translate into
+   * @param locale The locale to get the name for
+   * @param localeTo The locale to translate into
    * @returns The localized language name
    */
-  getLanguageName(code: string, locale: string): string {
-    const i18n = this.i18ns.get(locale);
-    return i18n?.languages.get(code) || code;
+  getLanguageName(locale: string, localeTo: string): string {
+    const i18n = this.i18ns.get(localeTo);
+    return i18n?.languages.get(locale) || locale;
   }
 }
 

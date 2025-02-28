@@ -46,37 +46,39 @@ import keys from '@/resources/i18n/keys.json';
 import enData from '@/resources/i18n/en.json';
 import frData from '@/resources/i18n/fr.json';
 
-// Create an instance with keys
-const i18n = new ti18n({ keys });
+// Load our language keys.
+t18n.loadKeys(keys);
 
 // Load language data for multiple locales
-i18n.loadLocales({
+ti18n.loadLocales({
   en: enData,
   fr: frData
 });
 
 // Set the default locale
-i18n.setLanguage('en');
+ti18n.setLanguage('en');
 
 // Use generated keys in your application
-console.log(i18n.translate(i18n.keys.greeting));
+console.log(ti18n.translate(ti18n.keys.greeting));
 
 // Translate using a specific language
-console.log(i18n.translateTo(i18n.keys.greeting, 'fr'));
+console.log(ti18n.translateTo(ti18n.keys.greeting, 'fr'));
 
 // Get a translation coverage report for a specific locale
-const report = i18n.getCoverageReport('en');
+const report = ti18n.getCoverageReport('en');
 console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Coverage: 100.0%
 ```
 
 ## Advanced Usage / Data Structure
 
 ```javascript
+import { Ti18n } from '@zealsprince/ti18n'; // Use the Ti18n class instead of the default instance.
+
 // Define keys
 const keys = ['greeting', 'welcome', 'farewell'];
 
 // Create an instance with predefined keys
-const i18n = new ti18n({ keys });
+const i18n = new Ti18n({ keys });
 ```
 
 > ![NOTE]

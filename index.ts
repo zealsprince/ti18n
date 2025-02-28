@@ -1,6 +1,7 @@
 import type {
   Internationalization,
   InternationalizationData,
+  TranslationKeys,
 } from "@/types/internationalization";
 
 /**
@@ -26,7 +27,7 @@ export interface CoverageReport {
 /**
  * ti18n class for handling internationalization
  */
-export class Ti18n {
+export class Ti18n<K extends string = string> {
   private i18ns = new Map<string, Internationalization>();
   private header: string;
   private separator: string;
@@ -45,7 +46,7 @@ export class Ti18n {
   }: {
     header?: string;
     separator?: string;
-    keys?: string[];
+    keys?: K[];
   } = {}) {
     this.header = header;
     this.separator = separator;
@@ -59,11 +60,16 @@ export class Ti18n {
    * Get all defined keys mapped to their formatted versions
    * @returns Record of all defined keys
    */
-  get keys(): Record<string, string> {
-    // We need to split the keys by the separator
-    const keys = Object.fromEntries(this._keys.map(k => [k.split(this.separator)[1], k]));
+  get keys(): TranslationKeys<K> {
+    const keys = Object.fromEntries(this._keys.map(k => {
+      const translationKey = k.split(this.separator)[1];
+      // Convert both kebab-case and snake_case to camelCase
+      const typedKey = translationKey
+        .replace(/[-_]([a-z])/g, (_, letter) => letter.toUpperCase());
+      return [typedKey, k];
+    }));
 
-    return keys;
+    return keys as TranslationKeys<K>;
   }
 
   /**

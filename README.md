@@ -36,15 +36,15 @@ pnpm add @zealsprince/ti18n
 For examples on the data structures used, refer to the [Data Structure](#advanced-usage--data-structure) section.
 
 ```javascript
-import { ti18n } from '@zealsprince/ti18n';
-// or const { ti18n } = require('@zealsprince/ti18n');
+import { ti18n } from "@zealsprince/ti18n";
+// or const { ti18n } = require("@zealsprince/ti18n");
 
 // Import your keys which consist of a list of strings.
-import keys from '@/resources/i18n/keys.json';
+import keys from "@/resources/i18n/keys.json";
 
 // Import your language data - refer to the Language Data section for more details.
-import enData from '@/resources/i18n/en.json';
-import frData from '@/resources/i18n/fr.json';
+import enData from "@/resources/i18n/en.json";
+import frData from "@/resources/i18n/fr.json";
 
 // Load our language keys.
 t18n.loadKeys(keys);
@@ -56,29 +56,29 @@ ti18n.loadLocales({
 });
 
 // Set the default locale
-ti18n.setLanguage('en');
+ti18n.setLanguage("en");
 
 // Use generated keys in your application
 console.log(ti18n.translate(ti18n.keys.greeting));
 
 // Translate using a specific language
-console.log(ti18n.translateTo(ti18n.keys.greeting, 'fr'));
+console.log(ti18n.translateTo(ti18n.keys.greeting, "fr"));
 
 // Get a translation coverage report for a specific locale
-const report = ti18n.getCoverageReport('en');
+const report = ti18n.getCoverageReport("en");
 console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Coverage: 100.0%
 ```
 
 ## Advanced Usage / Data Structure
 
 ```javascript
-import { Ti18n } from '@zealsprince/ti18n'; // Use the Ti18n class instead of the default instance.
+import { Ti18n } from "@zealsprince/ti18n"; // Use the Ti18n class instead of the default instance.
 
-// Define keys
-const keys = ['greeting', 'welcome', 'farewell'];
+// Define keys.
+const keys = ["greeting", "welcome", "farewell"];
 
-// Create an instance with predefined keys
-const i18n = new Ti18n({ keys });
+// Create an instance with predefined keys; strictly typed.
+const i18n = new Ti18n<"greeting" | "welcome" | "farewell">({ keys });
 ```
 
 > [!NOTE]
@@ -86,7 +86,7 @@ const i18n = new Ti18n({ keys });
 
 ```javascript
 // Load language data
-i18n.loadLocale('en', {
+i18n.loadLocale("en", {
   languages: { en: "English", fr: "French" },
   dictionary: {
     greeting: "Hello",

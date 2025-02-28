@@ -33,6 +33,8 @@ pnpm add @zealsprince/ti18n
 
 ## Basic Usage
 
+For examples on the data structures used, refer to the [Data Structure](#advanced-usage--data-structure) section.
+
 ```javascript
 import { ti18n } from '@zealsprince/ti18n';
 // or const { ti18n } = require('@zealsprince/ti18n');
@@ -41,8 +43,8 @@ import { ti18n } from '@zealsprince/ti18n';
 import keys from '@/resources/i18n/keys.json';
 
 // Import your language data - refer to the Language Data section for more details.
-import enData from '@/resources/i18n//en.json';
-import frData from '@/resources/i18n//fr.json';
+import enData from '@/resources/i18n/en.json';
+import frData from '@/resources/i18n/fr.json';
 
 // Create an instance with keys
 const i18n = new ti18n({ keys });
@@ -78,7 +80,7 @@ const i18n = new ti18n({ keys });
 ```
 
 > ![NOTE]
-> Keys although in their definition without headers will be prefixed with a header and separator when used in translations. This is to avoid any ambiguity. The default header is `i18n` and the default separator is `::`. You can change these in the constructor.
+> Keys - although in their definition without headers - need to be prefixed with a header and separator when used in translations. This is to avoid any ambiguity. The default header is `i18n` and the default separator is `::`. You can change these in the constructor.
 
 ```javascript
 // Load language data
@@ -94,16 +96,17 @@ i18n.loadLocale('en', {
 // Set the default locale
 i18n.setLanguage('en');
 
-// Translate using the generated keys (preferred approach)
+// Translate a key the easiest way.
 console.log(i18n.translate(i18n.keys.greeting)); // Output: Hello
+
+// You can specify the raw key yourself. Keep in mind, the header and separator here are the defaults. You can modify them in the constructor.
+console.log(i18n.translate('i18n::greeting')); // Output: Hello
+
+// Keep in mind, specifying just 'greeting' will not work as the header is missing, making it ambiguous.
+console.log(i18n.translate('greeting')); // Output: greeting
 
 // Translation with parameters
 console.log(i18n.translate(i18n.keys.welcome, { name: 'John' })); // Output: Welcome, John!
-
-// Alternatively, you can translate using a specific language. You can also specify the key yourself.
-// Keep in mind, the header and separator here are the defaults. You can modify them in the constructor.
-console.log(i18n.translateTo('i18n::greeting', 'en')); // Output: Hello
-
 ```
 
 ### Check Translation Coverage

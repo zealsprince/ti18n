@@ -192,4 +192,31 @@ describe("ti18n TypeScript Integration", () => {
     expect(mixedI18n.translateTo(mixedI18n.keys.loginCount, "en", { count: "5" }))
       .toBe("Total logins: 5");
   });
+
+  test("should handle dot notation keys with camelCase conversion", () => {
+    const dotI18n = new Ti18n<"auth.login.success" | "user.settings.theme">({
+      header: "i18n",
+      separator: "::",
+      keys: ["auth.login.success", "user.settings.theme"]
+    });
+
+    const dotData: InternationalizationData = {
+      languages: { en: "English" },
+      dictionary: {
+        "auth.login.success": "Login successful",
+        "user.settings.theme": "Theme: {theme}"
+      }
+    };
+
+    dotI18n.loadLocales({ en: dotData });
+
+    // Keys should be accessible in camelCase
+    expect(dotI18n.keys.authLoginSuccess).toBe("i18n::auth.login.success");
+    expect(dotI18n.keys.userSettingsTheme).toBe("i18n::user.settings.theme");
+
+    // Translation should work with the converted keys
+    expect(dotI18n.translateTo(dotI18n.keys.authLoginSuccess, "en")).toBe("Login successful");
+    expect(dotI18n.translateTo(dotI18n.keys.userSettingsTheme, "en", { theme: "dark" }))
+      .toBe("Theme: dark");
+  });
 });

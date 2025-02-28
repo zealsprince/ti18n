@@ -63,9 +63,9 @@ export class Ti18n<K extends string = string> {
   get keys(): TranslationKeys<K> {
     const keys = Object.fromEntries(this._keys.map(k => {
       const translationKey = k.split(this.separator)[1];
-      // Convert both kebab-case and snake_case to camelCase
+      // Convert kebab-case, snake_case, and dot notation to camelCase
       const typedKey = translationKey
-        .replace(/[-_]([a-z])/g, (_, letter) => letter.toUpperCase());
+        .replace(/[-_.]([a-z])/g, (_, letter) => letter.toUpperCase());
       return [typedKey, k];
     }));
 

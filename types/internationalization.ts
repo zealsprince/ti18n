@@ -20,11 +20,3 @@ export interface InternationalizationData {
   languages?: Record<string, string>;
   dictionary?: Record<string, string>;
 }
-
-/**
- * Country code mapping for locales
- */
-export interface CountryCodeMapping {
-  locale: string;
-  code: string;
-}

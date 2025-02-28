@@ -58,7 +58,7 @@ describe('ti18n Key Validation and Coverage', () => {
   });
 
   test('should properly track defined keys', () => {
-    expect(i18n.getDefinedKeys()).toEqual(keys);
+      expect(Object.keys(i18n.keys)).toEqual(keys);
   });
 
   test('should load complete language files without warnings', () => {
@@ -81,19 +81,15 @@ describe('ti18n Key Validation and Coverage', () => {
   });
 
   test('should generate key objects for all defined keys', () => {
-    const generatedKeys = i18n.createAllKeys();
-    
-    expect(Object.keys(generatedKeys)).toEqual(keys);
-    expect(typeof generatedKeys.greeting).toBe('string');
-    expect(typeof generatedKeys.farewell).toBe('string');
+    expect(typeof i18n.keys.greeting).toBe('string');
+    expect(typeof i18n.keys.farewell).toBe('string');
   });
 
   test('should handle translations with generated keys', () => {
     i18n.loadLocale('en', enData);
-    const keys = i18n.createAllKeys();
     
-    expect(i18n.translate(keys.greeting, 'en')).toBe('Hello');
-    expect(i18n.translate(keys.farewell, 'en')).toBe('Goodbye');
+    expect(i18n.translateTo(i18n.keys.greeting, 'en')).toBe('Hello');
+    expect(i18n.translateTo(i18n.keys.farewell, 'en')).toBe('Goodbye');
   });
 
   test('should generate accurate coverage reports', () => {

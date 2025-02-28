@@ -1,11 +1,12 @@
 import {
   Ti18n,
   type InternationalizationData,
-  type CountryCodeMapping,
 } from "../index";
 
 describe("ti18n TypeScript Integration", () => {
   let i18n: Ti18n;
+
+  const keys = ["greeting", "welcome", "items"];
 
   const enData: InternationalizationData = {
     languages: {
@@ -33,17 +34,11 @@ describe("ti18n TypeScript Integration", () => {
     },
   };
 
-  const countryMappings: CountryCodeMapping[] = [
-    { locale: "en", code: "US" },
-    { locale: "fr", code: "FR" },
-    { locale: "de", code: "DE" },
-  ];
-
   beforeEach(() => {
     i18n = new Ti18n({
       header: "i18n",
       separator: "::",
-      countryCodeMappings: countryMappings,
+      keys
     });
 
     i18n.loadLocales({
@@ -57,17 +52,15 @@ describe("ti18n TypeScript Integration", () => {
   });
 
   test("should handle simple translations", () => {
-    const greetingKey = i18n.createKey("greeting");
-    expect(i18n.translate(greetingKey, "en")).toBe("Hello");
-    expect(i18n.translate(greetingKey, "fr")).toBe("Bonjour");
+    expect(i18n.translateTo(i18n.keys.greeting, "en")).toBe("Hello");
+    expect(i18n.translateTo(i18n.keys.greeting, "fr")).toBe("Bonjour");
   });
 
   test("should handle translations with parameters", () => {
-    const welcomeKey = i18n.createKey("welcome");
     const params = { name: "Alice" };
-
-    expect(i18n.translate(welcomeKey, "en", params)).toBe("Welcome, Alice!");
-    expect(i18n.translate(welcomeKey, "fr", params)).toBe("Bienvenue, Alice !");
+    
+    expect(i18n.translateTo(i18n.keys.welcome, "en", params)).toBe("Welcome, Alice!");
+    expect(i18n.translateTo(i18n.keys.welcome, "fr", params)).toBe("Bienvenue, Alice !");
   });
 
   test("should correctly return language names", () => {
@@ -80,9 +73,26 @@ describe("ti18n TypeScript Integration", () => {
     expect(i18n.getLanguageName("de", "fr")).toBe("Allemand");
   });
 
-  test("should map locales to country codes", () => {
-    expect(i18n.localeToCountryCode("en")).toBe("US");
-    expect(i18n.localeToCountryCode("fr")).toBe("FR");
-    expect(i18n.localeToCountryCode("de")).toBe("DE");
+  test("should handle global language setting in TypeScript", () => {
+    const params = { name: "Alice" };
+
+    // Should throw with proper type checking
+    expect(() => i18n.translate("welcomeKey")).toThrow("No global language set");
+
+    i18n.setLanguage("en");
+    expect(i18n.getLanguage()).toBe("en");
+    expect(i18n.translate(i18n.keys.welcome, params)).toBe("Welcome, Alice!");
+
+    i18n.setLanguage("fr");
+    expect(i18n.translate(i18n.keys.welcome, params)).toBe("Bienvenue, Alice !");
+  });
+
+  test("should use allKeys getter with type safety", () => {
+    // TypeScript should infer these as strings
+    const greetingKey: string = i18n.keys.greeting;
+    const welcomeKey: string = i18n.keys.welcome;
+    
+    expect(greetingKey).toBe(i18n.createKey("greeting"));
+    expect(welcomeKey).toBe(i18n.createKey("welcome"));
   });
 });

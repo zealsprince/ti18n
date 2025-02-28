@@ -11,6 +11,8 @@ A lightweight, zero-dependency internationalization library for TypeScript and J
 - **TypeScript Support**: Full type safety for your projects
 - **Flexible Configuration**: Adapts to different project structures
 - **Validation Tools**: Track translation coverage and missing keys
+- **Parameters**: Support for dynamic values in translations
+- **Language Aliases**: Support for language aliases within the same locale
 
 ## Use Cases
 
@@ -35,58 +37,12 @@ pnpm add @zealsprince/ti18n
 import { ti18n } from 'ti18n';
 // or const { ti18n } = require('ti18n');
 
-// Define keys (recommended approach)
-const keys = ['greeting', 'welcome', 'farewell'];
+// Import your keys which consist of a list of strings.
+import keys from '@/resources/i18n/keys.json';
 
-// Create an instance with predefined keys
-const i18n = new ti18n({ keys });
-
-// Load language data
-i18n.loadLocale('en', {
-  languages: { en: "English", fr: "French" },
-  dictionary: {
-    greeting: "Hello",
-    welcome: "Welcome, {name}!",
-    farewell: "Goodbye"
-  }
-});
-
-// Generate type-safe keys for all defined translations
-const translationKeys = i18n.createAllKeys();
-
-// Translate using the generated keys (preferred approach)
-console.log(i18n.translate(translationKeys.greeting, 'en')); // Output: Hello
-
-// Translation with parameters
-console.log(i18n.translate(translationKeys.welcome, 'en', { name: 'John' })); // Output: Welcome, John!
-
-// Validate translation coverage
-const report = i18n.getCoverageReport('en');
-console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Coverage: 100.0%
-```
-
-Keep in mind that you will probably want to load both keys and locales from external files.
-This example skips that for simplicity but a real-world application would likely involve loading these
-from JSON files via a fetch or import statement. In that sense the library won't impose any stylistic
-constraints on your project. Bring your own format.
-
-### Alternative Approach (Direct Key Creation)
-
-```javascript
-// Create translation keys manually
-const greetingKey = i18n.createKey('greeting');
-const welcomeKey = i18n.createKey('welcome');
-
-// Translate using individual keys
-console.log(i18n.translate(greetingKey, 'en')); // Output: Hello
-console.log(i18n.translate(welcomeKey, 'en', { name: 'Alice' })); // Output: Welcome, Alice!
-```
-
-## Key Management & Validation
-
-```javascript
-// Import your keys from a separate file
-import keys from './keys.json';
+// Import your language data - refer to the Language Data section for more details.
+import enData from '@/resources/i18n//en.json';
+import frData from '@/resources/i18n//fr.json';
 
 // Create an instance with keys
 const i18n = new ti18n({ keys });
@@ -97,12 +53,57 @@ i18n.loadLocales({
   fr: frData
 });
 
-// Generate an object with formatted keys for all defined keys
-const translationKeys = i18n.createAllKeys();
+// Set the default locale
+i18n.setLanguage('en');
 
 // Use generated keys in your application
-console.log(i18n.translate(translationKeys.greeting, 'en'));
-console.log(i18n.translate(translationKeys.greeting, 'fr'));
+console.log(i18n.translate(i18n.keys.greeting));
+
+// Translate using a specific language
+console.log(i18n.translateTo(i18n.keys.greeting, 'fr'));
+
+// Get a translation coverage report for a specific locale
+const report = i18n.getCoverageReport('en');
+console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Coverage: 100.0%
+```
+
+## Advanced Usage / Data Structure
+
+```javascript
+// Define keys
+const keys = ['greeting', 'welcome', 'farewell'];
+
+// Create an instance with predefined keys
+const i18n = new ti18n({ keys });
+```
+
+> ![NOTE]
+> Keys although in their definition without headers will be prefixed with a header and separator when used in translations. This is to avoid any ambiguity. The default header is `i18n` and the default separator is `::`. You can change these in the constructor.
+
+```javascript
+// Load language data
+i18n.loadLocale('en', {
+  languages: { en: "English", fr: "French" },
+  dictionary: {
+    greeting: "Hello",
+    welcome: "Welcome, {name}!",
+    farewell: "Goodbye"
+  }
+});
+
+// Set the default locale
+i18n.setLanguage('en');
+
+// Translate using the generated keys (preferred approach)
+console.log(i18n.translate(i18n.keys.greeting)); // Output: Hello
+
+// Translation with parameters
+console.log(i18n.translate(i18n.keys.welcome, { name: 'John' })); // Output: Welcome, John!
+
+// Alternatively, you can translate using a specific language. You can also specify the key yourself.
+// Keep in mind, the header and separator here are the defaults. You can modify them in the constructor.
+console.log(i18n.translateTo('i18n::greeting', 'en')); // Output: Hello
+
 ```
 
 ### Check Translation Coverage
@@ -118,13 +119,6 @@ console.log('Extra keys:', report.extraKeys);
 
 // Get reports for all locales
 const allReports = i18n.getAllCoverageReports();
-```
-
-### Country Code Mappings
-
-```typescript
-// Get country code for a locale
-i18n.localeToCountryCode("en"); // Returns "US"
 ```
 
 ## License

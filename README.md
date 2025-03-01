@@ -74,14 +74,14 @@ console.log(`Coverage: ${(report.coverage * 100).toFixed(1)}%`); // Output: Cove
 ```javascript
 import { Ti18n } from "@zealsprince/ti18n"; // Use the Ti18n class instead of the default instance.
 
-// Define keys.
-const keys = ["greeting", "welcome", "farewell"]
+// Define keys. Make sure they are set as constants. Otherwise TypeScript will not be able to infer the type.
+const KEYS = ["greeting", "welcome", "farewell"] as const
 
-// Create a type from the keys.
-type Key = typeof keys[number]
+// Create a type from the constant translation keys.
+type Key = typeof KEYS[number]
 
 // Create an instance with predefined keys; strictly typed.
-const i18n = new Ti18n<Key>({ keys: Array.from(keys) })
+const i18n = new Ti18n<Key>({ keys: Array.from(KEYS) })
 ```
 
 > [!NOTE]

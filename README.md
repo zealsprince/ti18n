@@ -81,7 +81,7 @@ const keys = ["greeting", "welcome", "farewell"]
 type Key = typeof keys[number]
 
 // Create an instance with predefined keys; strictly typed.
-const i18n = new Ti18n<Key>({ keys });
+const i18n = new Ti18n<Key>({ keys: Array.from(keys) })
 ```
 
 > [!NOTE]

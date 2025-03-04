@@ -47,7 +47,7 @@ import enData from "@/resources/i18n/en.json";
 import frData from "@/resources/i18n/fr.json";
 
 // Load our language keys.
-t18n.loadKeys(keys);
+ti18n.loadKeys(keys);
 
 // Load language data for multiple locales
 ti18n.loadLocales({
@@ -81,7 +81,7 @@ const KEYS = ["greeting", "welcome", "farewell"] as const
 type Key = typeof KEYS[number]
 
 // Create an instance with predefined keys; strictly typed.
-const i18n = new Ti18n<Key>({ keys: Array.from(KEYS) })
+const myTi18n = new Ti18n<Key>({ keys: Array.from(KEYS) })
 ```
 
 > [!NOTE]
@@ -89,7 +89,7 @@ const i18n = new Ti18n<Key>({ keys: Array.from(KEYS) })
 
 ```javascript
 // Load language data
-i18n.loadLocale("en", {
+myTi18n.loadLocale("en", {
   languages: { en: "English", fr: "French" },
   dictionary: {
     greeting: "Hello",
@@ -99,19 +99,19 @@ i18n.loadLocale("en", {
 });
 
 // Set the default locale
-i18n.setLanguage('en');
+myTi18n.setLanguage('en');
 
 // Translate a key the easiest way.
-console.log(i18n.translate(i18n.keys.greeting)); // Output: Hello
+console.log(myTi18n.translate(myTi18n.keys.greeting)); // Output: Hello
 
 // You can specify the raw key yourself. Keep in mind, the header and separator here are the defaults. You can modify them in the constructor.
-console.log(i18n.translate('i18n::greeting')); // Output: Hello
+console.log(myTi18n.translate('i18n::greeting')); // Output: Hello
 
 // Keep in mind, specifying just 'greeting' will not work as the header is missing, making it ambiguous.
-console.log(i18n.translate('greeting')); // Output: greeting
+console.log(myTi18n.translate('greeting')); // Output: greeting
 
 // Translation with parameters
-console.log(i18n.translate(i18n.keys.welcome, { name: 'John' })); // Output: Welcome, John!
+console.log(myTi18n.translate(myTi18n.keys.welcome, { name: 'John' })); // Output: Welcome, John!
 ```
 
 ### Check Translation Coverage
